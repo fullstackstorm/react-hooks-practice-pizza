@@ -17,10 +17,20 @@ function App() {
     setPizza(pizza);
   }
 
+  function handleFormSubmission(newPizza) {
+    const newList = pizzaList.map((pizza) => {
+      if(pizza.id === newPizza.id){
+        pizza = newPizza;
+      }
+      return pizza;
+    })
+    setPizzaList(newList)
+  }
+
   return (
     <>
       <Header />
-      <PizzaForm pizza={pizza} />
+      <PizzaForm pizza={pizza} onSubmit={handleFormSubmission}/>
       <PizzaList handleEdit={handlePizzaEdit} pizzaList={pizzaList} />
     </>
   );

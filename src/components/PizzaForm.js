@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from "react";
 
-function PizzaForm({ pizza }) {
-  const [formData, setFormData] = useState({
+function PizzaForm({ pizza, onSubmit }) {
+  const [initialFormData, setInitialFormData] = useState({
+    id: 0,
     topping: "",
     size: "",
     vegetarian: false,
   });
 
+  const [formData, setFormData] = useState(initialFormData);
+
   useEffect(() => {
     if (pizza) {
       setFormData({
+        id: pizza.id,
         topping: pizza.topping,
         size: pizza.size,
         vegetarian: pizza.vegetarian,
       });
+    } else {
+      setFormData(initialFormData);
     }
-  }, [pizza]);
+  }, [pizza, initialFormData]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -25,8 +31,23 @@ function PizzaForm({ pizza }) {
     }));
   }
 
+  function handleRadioChange(event) {
+    const { name, value } = event.target;
+    const isVegetarian = value === "Vegetarian";
+    setFormData((prevForm) => ({
+      ...prevForm,
+      [name]: isVegetarian,
+    }));
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    onSubmit(formData);
+    setFormData(initialFormData);
+  }
+
   return (
-    <form onSubmit={null /*handle that submit*/}>
+    <form onSubmit={handleSubmit}>
       <div className="form-row">
         <div className="col-5">
           <input
@@ -39,7 +60,12 @@ function PizzaForm({ pizza }) {
           />
         </div>
         <div className="col">
-          <select className="form-control" name="size" value={formData.size} onChange={handleChange}>
+          <select
+            className="form-control"
+            name="size"
+            value={formData.size}
+            onChange={handleChange}
+          >
             <option value="Small">Small</option>
             <option value="Medium">Medium</option>
             <option value="Large">Large</option>
@@ -53,6 +79,7 @@ function PizzaForm({ pizza }) {
               name="vegetarian"
               value="Vegetarian"
               checked={formData.vegetarian}
+              onChange={handleRadioChange}
             />
             <label className="form-check-label">Vegetarian</label>
           </div>
@@ -63,6 +90,7 @@ function PizzaForm({ pizza }) {
               name="vegetarian"
               value="Not Vegetarian"
               checked={!formData.vegetarian}
+              onChange={handleRadioChange}
             />
             <label className="form-check-label">Not Vegetarian</label>
           </div>
